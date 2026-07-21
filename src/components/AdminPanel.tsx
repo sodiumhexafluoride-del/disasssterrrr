@@ -17,11 +17,7 @@ import {
   RefreshCw,
   FileText,
   Send,
-  Search,
-  Database,
-  Cloud,
-  Wifi,
-  WifiOff
+  Search
 } from "lucide-react";
 import { DrillState, EvacuationCategory, TriageCategory, Victim } from "../types";
 
@@ -67,7 +63,7 @@ interface AdminPanelProps {
 
 export default function AdminPanel({ drillState, onRefresh }: AdminPanelProps) {
   // Navigation tabs for the Admin Panel
-  const [activeSubTab, setActiveSubTab] = useState<"timer" | "victims" | "evacuees" | "firebase">("timer");
+  const [activeSubTab, setActiveSubTab] = useState<"timer" | "victims" | "evacuees">("timer");
 
   // Timer loading states
   const [isTimerLoading, setIsTimerLoading] = useState(false);
@@ -76,37 +72,11 @@ export default function AdminPanel({ drillState, onRefresh }: AdminPanelProps) {
   const [scenarioInput, setScenarioInput] = useState(drillState.scenario || "");
   const [isScenarioSubmitting, setIsScenarioSubmitting] = useState(false);
 
-  // Firebase connection status state
-  const [firebaseStatus, setFirebaseStatus] = useState<{
-    active: boolean;
-    projectId: string | null;
-    usingAdc: boolean;
-    hasServiceAccount: boolean;
-  } | null>(null);
-  const [isFbStatusLoading, setIsFbStatusLoading] = useState(false);
-
-  // Fetch Firebase status
-  const fetchFirebaseStatus = async () => {
-    setIsFbStatusLoading(true);
-    try {
-      const res = await fetch("/api/firebase/status");
-      if (res.ok) {
-        const data = await res.json();
-        setFirebaseStatus(data);
-      }
-    } catch (err) {
-      console.error("Error fetching Firebase status:", err);
-    } finally {
-      setIsFbStatusLoading(false);
-    }
-  };
-
   // Sync with prop updates
   useEffect(() => {
     if (drillState.scenario) {
       setScenarioInput(drillState.scenario);
     }
-    fetchFirebaseStatus();
   }, [drillState.scenario]);
 
   // Situation Announcement Form state
@@ -536,16 +506,6 @@ export default function AdminPanel({ drillState, onRefresh }: AdminPanelProps) {
         >
           <Users className="w-4 h-4" />
           👥 Kakitangan Selamat & Pembetulan
-        </button>
-        <button
-          onClick={() => {
-            setActiveSubTab("firebase");
-            fetchFirebaseStatus();
-          }}
-          className={`px-5 py-3 font-bold text-sm transition-all border-b-2 flex items-center gap-2 cursor-pointer ${activeSubTab === "firebase" ? "border-slate-800 text-slate-800" : "border-transparent text-slate-500 hover:text-slate-800"}`}
-        >
-          <Cloud className="w-4 h-4 text-amber-500 animate-pulse" />
-          🔌 Sambungan Firebase
         </button>
       </div>
 
@@ -1157,139 +1117,6 @@ export default function AdminPanel({ drillState, onRefresh }: AdminPanelProps) {
                   );
                 })
               )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {activeSubTab === "firebase" && (
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-xs space-y-6 animate-fade-in" id="firebase-config-tab">
-          
-          {/* Header */}
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-            <div>
-              <h3 className="text-md font-bold text-slate-800 flex items-center gap-2">
-                <Database className="text-amber-500 w-5 h-5" />
-                Integrasi & Sambungan Firebase HSI
-              </h3>
-              <p className="text-xs text-slate-400 mt-0.5">Pantau status sambungan pelayan terus ke Cloud Firestore bagi penyimpanan data luar talian & masa nyata.</p>
-            </div>
-            <button 
-              onClick={fetchFirebaseStatus}
-              disabled={isFbStatusLoading}
-              className="px-3.5 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-lg text-xs font-bold transition-all border border-slate-200/60 flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${isFbStatusLoading ? 'animate-spin' : ''}`} />
-              Uji Sambungan
-            </button>
-          </div>
-
-          {/* Status Display Card */}
-          {firebaseStatus?.active ? (
-            <div className="p-6 bg-emerald-50 border border-emerald-200 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center gap-4 text-emerald-950">
-              <div className="p-3 bg-emerald-100 text-emerald-700 rounded-xl shrink-0">
-                <Wifi className="w-8 h-8 animate-pulse" />
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] bg-emerald-600 text-white font-extrabold px-2 py-0.5 rounded-full uppercase">AKTIF & BERHUBUNG</span>
-                  <span className="text-xs font-semibold text-emerald-700">Firebase Firestore</span>
-                </div>
-                <h4 className="text-base font-black">Sambungan Awan Selamat Beroperasi</h4>
-                <p className="text-xs text-emerald-800 max-w-2xl font-medium leading-relaxed">
-                  Sistem berjaya disambungkan ke Cloud Firestore! Semua data pendaftaran pemindahan (headcount), log situasi semasa, dan triage mangsa akan disimpan secara automatik ke awan dan dikongsi antara semua peranti penyelia dalam masa nyata (real-time).
-                </p>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 pt-4 border-t border-emerald-200/50 text-xs font-mono">
-                  <p><span className="font-bold text-emerald-700">ID Projek:</span> {firebaseStatus.projectId}</p>
-                  <p>
-                    <span className="font-bold text-emerald-700">Kredensial:</span>{" "}
-                    {firebaseStatus.usingAdc ? "ADC (Google Cloud Integration)" : "Kunci Akaun Perkhidmatan (Service Account)"}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="p-6 bg-amber-50 border border-amber-200 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center gap-4 text-amber-950">
-              <div className="p-3 bg-amber-100 text-amber-600 rounded-xl shrink-0">
-                <WifiOff className="w-8 h-8" />
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] bg-amber-500 text-white font-extrabold px-2 py-0.5 rounded-full uppercase">SESI LUAR TALIAN (FALLBACK)</span>
-                  <span className="text-xs font-semibold text-amber-700">Pangkalan Data Lokal</span>
-                </div>
-                <h4 className="text-base font-black">Beroperasi Dalam Mod Sesi Mandiri (Lokal Cache)</h4>
-                <p className="text-xs text-amber-800 max-w-2xl font-medium leading-relaxed">
-                  Sistem kini berjalan secara lokal di pelayan ini menggunakan fail cache <code className="bg-amber-100/60 px-1 py-0.2 rounded">src/data/db.json</code>. Walaupun semua ciri pendaftaran, pemasa, dan triage berfungsi sepenuhnya, data tidak akan disegerakkan ke pangkalan data awan jika anda mempunyai berbilang replika pelayan.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Guide Card */}
-          <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6">
-            <h4 className="text-sm font-extrabold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Cloud className="w-4 h-4 text-slate-500" />
-              PANDUAN KONFIGURASI SAMBUNGAN AWAN (CLOUD)
-            </h4>
-            
-            <div className="space-y-4 text-xs text-slate-600 leading-relaxed font-medium">
-              <div className="flex gap-3">
-                <span className="flex justify-center items-center w-5 h-5 bg-slate-900 text-white rounded-full font-bold text-[10px] shrink-0 mt-0.5">1</span>
-                <div>
-                  <p className="font-extrabold text-slate-800">Dapatkan Akaun Firebase</p>
-                  <p className="mt-0.5 text-slate-500">Cipta projek Firebase secara percuma di <a href="https://console.firebase.google.com" target="_blank" rel="noopener noreferrer" className="text-red-600 font-bold underline hover:text-red-700">Konsol Firebase</a>.</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <span className="flex justify-center items-center w-5 h-5 bg-slate-900 text-white rounded-full font-bold text-[10px] shrink-0 mt-0.5">2</span>
-                <div>
-                  <p className="font-extrabold text-slate-800">Aktifkan Cloud Firestore</p>
-                  <p className="mt-0.5 text-slate-500">Dalam projek anda, aktifkan pangkalan data **Cloud Firestore** dalam zon serantau pilihan anda (cth. <code className="bg-slate-200/50 px-1 py-0.2 rounded text-[10px]">asia-southeast1</code> untuk Malaysia).</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <span className="flex justify-center items-center w-5 h-5 bg-slate-900 text-white rounded-full font-bold text-[10px] shrink-0 mt-0.5">3</span>
-                <div>
-                  <p className="font-extrabold text-slate-800">Jana Kunci Perkhidmatan (Service Account Credentials)</p>
-                  <p className="mt-0.5 text-slate-500">Pergi ke **Project Settings &rarr; Service Accounts**, pilih *Node.js* dan klik **Generate New Private Key**. Fail JSON kunci peribadi akan dimuat turun secara automatik ke komputer anda.</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <span className="flex justify-center items-center w-5 h-5 bg-slate-900 text-white rounded-full font-bold text-[10px] shrink-0 mt-0.5">4</span>
-                <div>
-                  <p className="font-extrabold text-slate-800">Tetapkan Secrets dalam AI Studio</p>
-                  <p className="mt-0.5 text-slate-500">Buka panel **Secrets / Settings** di AI Studio dan masukkan pembolehubah persekitaran (Environment Variables) berikut berdasarkan nilai di dalam fail JSON kunci peribadi anda:</p>
-                  
-                  <div className="bg-slate-900 text-slate-200 p-4 rounded-xl font-mono text-[10px] space-y-2.5 mt-2 border border-slate-800 select-all shadow-inner">
-                    <div>
-                      <span className="text-red-400 font-bold block"># 1. Project ID</span>
-                      <span>FIREBASE_PROJECT_ID="<span className="text-emerald-400">project_id_anda</span>"</span>
-                    </div>
-                    <div>
-                      <span className="text-red-400 font-bold block"># 2. Client Email</span>
-                      <span>FIREBASE_CLIENT_EMAIL="<span className="text-emerald-400">firebase-adminsdk-xxx@project_id.iam.gserviceaccount.com</span>"</span>
-                    </div>
-                    <div>
-                      <span className="text-red-400 font-bold block"># 3. Private Key</span>
-                      <span>FIREBASE_PRIVATE_KEY="<span className="text-emerald-400">-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBg...</span>"</span>
-                    </div>
-                  </div>
-                  <p className="text-[10px] text-slate-400 mt-1.5 italic">Nota: Pastikan anda menukar semua aksara baris baharu (\n) di dalam Private Key menjadi teks rentetan dwi-aksara "\n" seperti format di atas agar pelayan boleh membacanya dengan tepat.</p>
-                </div>
-              </div>
-
-              <div className="flex gap-3">
-                <span className="flex justify-center items-center w-5 h-5 bg-slate-900 text-white rounded-full font-bold text-[10px] shrink-0 mt-0.5">5</span>
-                <div>
-                  <p className="font-extrabold text-slate-800">Sambungan Automatik</p>
-                  <p className="mt-0.5 text-slate-500">Setelah Secrets disimpan, pelayan Express kami akan dikesan semula dan dihubungkan secara terus ke Cloud Firestore. Klik **Uji Sambungan** di atas untuk mengesahkan status!</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>

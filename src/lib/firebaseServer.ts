@@ -65,24 +65,6 @@ export async function getFirebaseState(): Promise<DrillState | null> {
   return null;
 }
 
-export function listenToFirebaseState(onUpdate: (state: DrillState) => void) {
-  if (!isFirebaseActive()) return null;
-  try {
-    const docRef = db.collection("drills").doc("active_drill_state");
-    return docRef.onSnapshot((doc: any) => {
-      if (doc.exists) {
-        const data = doc.data() as DrillState;
-        onUpdate(data);
-      }
-    }, (error: any) => {
-      console.error("❌ [Firebase] Error listening to Firestore state:", error);
-    });
-  } catch (error) {
-    console.error("❌ [Firebase] Failed to set up Firestore listener:", error);
-    return null;
-  }
-}
-
 export async function saveFirebaseState(state: DrillState): Promise<boolean> {
   if (!isFirebaseActive()) return false;
   try {

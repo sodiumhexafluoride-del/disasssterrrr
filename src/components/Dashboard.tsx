@@ -13,8 +13,7 @@ import {
   CheckCircle2, 
   AlertTriangle, 
   ShieldAlert, 
-  RefreshCw,
-  Cloud
+  RefreshCw 
 } from "lucide-react";
 import { DrillState, EvacuationCategory, TriageCategory } from "../types";
 
@@ -38,26 +37,6 @@ export default function Dashboard({ drillState, onRefresh }: DashboardProps) {
   const [victimFilter, setVictimFilter] = useState<string>("Semua");
   const [bilikSearch, setBilikSearch] = useState("");
   const [bilikFilter, setBilikFilter] = useState<string>("Semua");
-
-  // Firebase status state
-  const [firebaseActive, setFirebaseActive] = useState(false);
-
-  useEffect(() => {
-    const checkFirebase = async () => {
-      try {
-        const res = await fetch("/api/firebase/status");
-        if (res.ok) {
-          const data = await res.json();
-          setFirebaseActive(data.active);
-        }
-      } catch (e) {
-        console.error("Failed to fetch Firebase status in Dashboard", e);
-      }
-    };
-    checkFirebase();
-    const interval = setInterval(checkFirebase, 10000); // Check every 10 seconds
-    return () => clearInterval(interval);
-  }, []);
 
   // Real-time Local Clock
   useEffect(() => {
@@ -267,18 +246,11 @@ export default function Dashboard({ drillState, onRefresh }: DashboardProps) {
             <h1 className="text-md md:text-lg font-black text-slate-800 tracking-tight">Hospital Sultan Ismail</h1>
           </div>
         </div>
-        <div className="pt-2 md:pt-0 border-t md:border-t-0 md:border-l border-slate-100 md:pl-4 text-xs text-slate-500 flex items-center justify-between md:justify-start w-full md:w-auto gap-4 shrink-0">
+        <div className="pt-2 md:pt-0 border-t md:border-t-0 md:border-l border-slate-100 md:pl-4 text-xs text-slate-500 flex items-center shrink-0">
           <p className="flex items-center gap-2 font-semibold text-slate-600">
             <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block shrink-0 animate-ping"></span>
             {drillState.scenario || "Sistem Pengurusan Bencana Nyata & Selaras"}
           </p>
-          
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border shrink-0" title={firebaseActive ? "Disambungkan ke Firebase Firestore (Masa Nyata)" : "Mod Sesi Lokal (db.json)"}>
-            <Cloud className={`w-3.5 h-3.5 ${firebaseActive ? 'text-emerald-500 animate-pulse' : 'text-slate-400'}`} />
-            <span className={firebaseActive ? 'text-emerald-700 font-extrabold' : 'text-slate-500 font-semibold'}>
-              {firebaseActive ? 'Awan Aktif' : 'Lokal Cache'}
-            </span>
-          </div>
         </div>
       </div>
 
