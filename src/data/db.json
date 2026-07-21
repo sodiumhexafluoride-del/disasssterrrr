@@ -1,0 +1,48 @@
+{
+  "isRunning": false,
+  "startTime": null,
+  "pausedTime": 0,
+  "scenario": "Sistem Pengurusan Bencana Nyata & Selaras",
+  "currentSituation": "Sistem bersedia. Menunggu latihan bermula.",
+  "situationLogs": [
+    {
+      "id": "log-init",
+      "time": "11:07:40",
+      "situation": "Sistem diaktifkan untuk Latihan Kebakaran HSI.",
+      "type": "info"
+    }
+  ],
+  "evacuatedPersonnel": [
+    {
+      "id": "evac-0q356a3c0",
+      "name": "asdas",
+      "roleOrId": "dasdas",
+      "category": "Kakitangan Hospital",
+      "departmentOrWard": "Bilik Gerakan",
+      "timestamp": "2026-07-21T11:07:48.050Z"
+    },
+    {
+      "id": "evac-gskkzuzry",
+      "name": "asdasd",
+      "roleOrId": "asdasd",
+      "category": "Kakitangan Hospital",
+      "departmentOrWard": "Zon Berkumpul",
+      "timestamp": "2026-07-21T11:07:47.132Z"
+    }
+  ],
+  "victims": [],
+  "manualEvacuatedCounts": {
+    "Kakitangan Hospital": 1,
+    "Pesakit": 0,
+    "Orang Awam": 0,
+    "Agensi/NGO": 0,
+    "PAKSI/ERT": 0,
+    "Pemerhati": 0
+  },
+  "manualTriageCounts": {
+    "Red": 0,
+    "Yellow": 0,
+    "Green": 0,
+    "White": 0
+  }
+}

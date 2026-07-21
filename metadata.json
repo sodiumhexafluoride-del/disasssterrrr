@@ -1,0 +1,8 @@
+{
+  "name": "Remix: Disaster Management System",
+  "description": "Sistem Pengurusan Bencana untuk Latihan Kebakaran (Fire Drill) di Hospital Sultan Ismail (HSI) yang dilengkapi dengan paparan masa nyata (real-time dashboard), pendaftaran pemindahan (evacuation form), dan panel admin.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
